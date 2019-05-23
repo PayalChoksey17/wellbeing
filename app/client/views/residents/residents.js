@@ -62,8 +62,12 @@ Template.residents.helpers({
         let canEdit = false;
         const resident = Residents.findOne(residency.residentId);
         const home = Homes.findOne(residency.homeId);
+        const currentUserIsAdmin = templateInstance.currentUserIsAdmin.get() 
+        const hasDeparted = !!residency.moveOut && new Date(residency.moveOut).getTime() > 0
         
-        if (templateInstance.currentUserIsAdmin.get() || groupsManagedByCurrentUser.indexOf(home.groupId)>-1) {
+        if (
+          currentUserIsAdmin ||
+          (groupsManagedByCurrentUser.indexOf(home.groupId) > -1) && !hasDeparted) {
           canEdit = true
         }
         if (resident) {
@@ -77,7 +81,6 @@ Template.residents.helpers({
         } else {
           homeName = "unknown";
         }
-
         const residencyDetails = {
           ...residency,
           residentName,
